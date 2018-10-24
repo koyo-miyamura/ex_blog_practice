@@ -1,13 +1,14 @@
 defmodule ExBlog.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
-
+  alias ExBlog.Blog.Article
 
   schema "users" do
     field :email, :string
     field :name, :string
     field :password, :string
 
+    has_many :articles, Article
     timestamps()
   end
 
