@@ -12,12 +12,8 @@
     <%= @user.email %>
   </li>
 
-  <li>
-    <strong>Password:</strong>
-    <%= @user.password %>
-  </li>
-
 </ul>
-
-<span><%= link "Edit", to: user_path(@conn, :edit, @user) %></span>
+<%= if @user.id == current_user(@conn).id do %>
+  <span><%= link "Edit", to: user_path(@conn, :edit, @user) %></span>
+<% end %>
 <span><%= link "Back", to: user_path(@conn, :index) %></span>
