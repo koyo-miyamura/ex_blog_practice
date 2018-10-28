@@ -19,6 +19,10 @@
 
 </ul>
 <%= if @article.user.id == current_user(@conn).id do %>
-  <span><%= link "Edit", to: article_path(@conn, :edit, @article) %></span>
+  <%= link to: article_path(@conn, :edit, @article) do %>
+    <button type="button" class="btn btn-info btn-sm">
+      Edit
+    </button>
+  <% end %>
 <% end %>
 <span><%= link "Back", to: article_path(@conn, :index) %></span>
