@@ -1,7 +1,7 @@
 defmodule ExBlogWeb.LayoutView do
   use ExBlogWeb, :view
-  alias ExBlog.Accounts.Guardian
+  alias ExBlog.Accounts
   def current_user(conn) do
-    Guardian.Plug.current_resource(conn)
+    Accounts.current_user(conn)
   end
 end
