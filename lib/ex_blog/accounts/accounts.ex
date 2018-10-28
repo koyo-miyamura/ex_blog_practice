@@ -8,6 +8,7 @@ defmodule ExBlog.Accounts do
 
   alias ExBlog.Accounts.User
   alias Comeonin.Bcrypt
+  alias ExBlog.Accounts.Guardian
 
   @doc """
   Returns the list of users.
@@ -19,7 +20,9 @@ defmodule ExBlog.Accounts do
 
   """
   def list_users do
-    Repo.all(User)
+    User
+    |> Repo.all()
+    |> Repo.preload(:articles)
   end
 
   @doc """
@@ -36,7 +39,11 @@ defmodule ExBlog.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id) do
+    User
+    |> Repo.get!(id)
+    |> Repo.preload(:articles)
+  end
 
   @doc """
   Creates a user.
@@ -114,5 +121,9 @@ defmodule ExBlog.Accounts do
       true -> {:ok, user}
       false -> {:error, "Incorrect username or password"}
     end
+  end
+
+  def current_user(conn) do
+    Guardian.Plug.current_resource(conn)
   end
 end

@@ -7,6 +7,7 @@ defmodule ExBlog.Blog do
   alias ExBlog.Repo
 
   alias ExBlog.Blog.Article
+  alias ExBlog.Accounts.User
 
   @doc """
   Returns the list of articles.
@@ -18,7 +19,9 @@ defmodule ExBlog.Blog do
 
   """
   def list_articles do
-    Repo.all(Article)
+    Article
+    |> Repo.all()
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -35,7 +38,11 @@ defmodule ExBlog.Blog do
       ** (Ecto.NoResultsError)
 
   """
-  def get_article!(id), do: Repo.get!(Article, id)
+  def get_article!(id) do
+    Article
+    |> Repo.get!(id)
+    |> Repo.preload(:user)
+  end
 
   @doc """
   Creates a article.
@@ -49,9 +56,10 @@ defmodule ExBlog.Blog do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_article(attrs \\ %{}) do
+  def create_article(%User{} = user, attrs \\ %{}) do
     %Article{}
     |> Article.changeset(attrs)
+    |> Ecto.Changeset.put_change(:user_id, user.id)
     |> Repo.insert()
   end
 

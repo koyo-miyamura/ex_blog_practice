@@ -3,6 +3,7 @@ defmodule ExBlogWeb.ArticleController do
 
   alias ExBlog.Blog
   alias ExBlog.Blog.Article
+  alias ExBlog.Accounts.Guardian
 
   def index(conn, _params) do
     articles = Blog.list_articles()
@@ -15,7 +16,7 @@ defmodule ExBlogWeb.ArticleController do
   end
 
   def create(conn, %{"article" => article_params}) do
-    case Blog.create_article(article_params) do
+    case Blog.create_article(Guardian.Plug.current_resource(conn), article_params) do
       {:ok, article} ->
         conn
         |> put_flash(:info, "Article created successfully.")
