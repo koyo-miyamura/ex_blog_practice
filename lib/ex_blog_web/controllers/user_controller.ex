@@ -73,8 +73,10 @@ defmodule ExBlogWeb.UserController do
     |> redirect(to: page_path(conn, :index))
   end
 
+  # Current_user can access only own resources
+  # Check current_user's id match resource's id
   defp is_authorized(conn, _) do
-    current_user = Guardian.Plug.current_resource(conn)
+    current_user = Accounts.current_user(conn)
 
     if current_user.id == String.to_integer(conn.params["id"]) do
       assign(conn, :current_user, current_user)
