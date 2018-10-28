@@ -3,6 +3,11 @@
 <ul>
 
   <li>
+    <strong>User:</strong>
+    <%= @article.user.name %>
+  </li>
+
+  <li>
     <strong>Title:</strong>
     <%= @article.title %>
   </li>
@@ -13,6 +18,7 @@
   </li>
 
 </ul>
-
-<span><%= link "Edit", to: article_path(@conn, :edit, @article) %></span>
+<%= if @article.user.id == current_user(@conn).id do %>
+  <span><%= link "Edit", to: article_path(@conn, :edit, @article) %></span>
+<% end %>
 <span><%= link "Back", to: article_path(@conn, :index) %></span>
