@@ -3,6 +3,10 @@ defmodule ExBlogWeb.ArticleController do
 
   alias ExBlog.Blog
   alias ExBlog.Blog.Article
+  alias ExBlog.Accounts
+  alias ExBlog.Accounts.Guardian
+
+  plug :is_authorized when action in [:edit, :update, :delete]
 
   def index(conn, _params) do
     articles = Blog.list_articles()
@@ -15,7 +19,7 @@ defmodule ExBlogWeb.ArticleController do
   end
 
   def create(conn, %{"article" => article_params}) do
-    case Blog.create_article(article_params) do
+    case Blog.create_article(Guardian.Plug.current_resource(conn), article_params) do
       {:ok, article} ->
         conn
         |> put_flash(:info, "Article created successfully.")
@@ -30,14 +34,14 @@ defmodule ExBlogWeb.ArticleController do
     render(conn, "show.html", article: article)
   end
 
-  def edit(conn, %{"id" => id}) do
-    article = Blog.get_article!(id)
+  def edit(conn, _) do
+    article = conn.assigns.article
     changeset = Blog.change_article(article)
     render(conn, "edit.html", article: article, changeset: changeset)
   end
 
-  def update(conn, %{"id" => id, "article" => article_params}) do
-    article = Blog.get_article!(id)
+  def update(conn, %{"article" => article_params}) do
+    article = conn.assigns.article
 
     case Blog.update_article(article, article_params) do
       {:ok, article} ->
@@ -49,12 +53,27 @@ defmodule ExBlogWeb.ArticleController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    article = Blog.get_article!(id)
+  def delete(conn, _) do
+    article = conn.assigns.article
     {:ok, _article} = Blog.delete_article(article)
 
     conn
     |> put_flash(:info, "Article deleted successfully.")
     |> redirect(to: article_path(conn, :index))
+  end
+
+  # Current_user can access only own resources
+  # Check current_user's id match article.user.id
+  defp is_authorized(conn, _) do
+    current_user = Accounts.current_user(conn)
+    article = Blog.get_article!(conn.params["id"])
+    if current_user.id == article.user.id do
+      assign(conn, :article, article)
+    else
+      conn
+      |> put_flash(:error, "You can't modify that page")
+      |> redirect(to: page_path(conn, :index))
+      |> halt()
+    end
   end
 end

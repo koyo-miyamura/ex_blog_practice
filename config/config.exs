@@ -22,6 +22,10 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
 
+config :ex_blog, ExBlog.Accounts.Guardian,
+  issuer: "ex_blog", # Name of your app/company/product
+  secret_key: System.get_env("EX_BLOG_GUARDIAN_KEY") # Replace this with the output of the mix command
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

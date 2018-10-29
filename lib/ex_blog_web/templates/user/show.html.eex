@@ -1,4 +1,4 @@
-<h2>Show User</h2>
+<h1>Show User</h1>
 
 <ul>
 
@@ -12,12 +12,45 @@
     <%= @user.email %>
   </li>
 
-  <li>
-    <strong>Password:</strong>
-    <%= @user.password %>
-  </li>
-
 </ul>
-
-<span><%= link "Edit", to: user_path(@conn, :edit, @user) %></span>
+<%= if @user.id == current_user(@conn).id do %>
+  <%= link to: user_path(@conn, :edit, @user) do %>
+    <button type="button" class="btn btn-info btn-sm">
+      Edit
+    </button>
+  <% end %>
+<% end %>
 <span><%= link "Back", to: user_path(@conn, :index) %></span>
+
+<h2>Listing Articles</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Content</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for article <- @user.articles do %>
+    <tr>
+      <td><%= article.title %></td>
+      <td><%= article.content %></td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: article_path(@conn, :show, article), class: "btn btn-default btn-xs" %></span>
+        <%= if @user.id == current_user(@conn).id do %>
+          <span><%= link "Edit", to: article_path(@conn, :edit, article), class: "btn btn-default btn-xs" %></span>
+          <span><%= link "Delete", to: article_path(@conn, :delete, article), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+        <% end %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<%= if @user.id == current_user(@conn).id do %>
+  <span><%= link "New Article", to: article_path(@conn, :new) %></span>
+<% end %>

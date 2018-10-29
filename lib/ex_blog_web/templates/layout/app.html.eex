@@ -11,17 +11,65 @@
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
-  <body>
-    <div class="container">
-      <header class="header">
-        <nav role="navigation">
-          <ul class="nav nav-pills pull-right">
-            <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
-          </ul>
-        </nav>
-        <span class="logo"></span>
-      </header>
-
+  <!-- phoenix.cssが邪魔するので暫定的にbodyに直接style -->
+  <body style="margin-top: 0px">
+    <header class="header">
+      <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container d-flex justify-content-between">
+          <nav role="navigation">
+            <ul class="nav nav-pills pull-right">
+              <li>
+                <%= link to: page_path(@conn, :index) do %>
+                  <button type="button" class="btn btn-default btn-sm">
+                    Home
+                  </button>
+                <% end %>
+              </li>
+              <%= if current_user(@conn) do %>
+                <li>
+                  <%= link to: article_path(@conn, :index) do %>
+                    <button type="button" class="btn btn-info btn-sm">
+                      Articles
+                    </button>
+                  <% end %>
+                </li>
+                <li>
+                  <%= link to: user_path(@conn, :index) do %>
+                    <button type="button" class="btn btn-info btn-sm">
+                      Users
+                    </button>
+                  <% end %>
+                </li>
+                <li>
+                  <%= link to: user_path(@conn, :show, current_user(@conn)) do %>
+                    <button type="button" class="btn btn-info btn-sm">
+                      <b><%= current_user(@conn).name %></b>'s page
+                    </button>
+                  <% end %>
+                </li>
+                <li>
+                  <%= link to: session_path(@conn, :delete), method: :delete do %>
+                    <button type="button" class="btn btn-danger btn-sm">
+                      Logout
+                    </button>
+                  <% end %>
+                </li>
+              <% else %>
+                <li>
+                  <%= link to: session_path(@conn, :new) do %>
+                    <button type="button" class="btn btn-default btn-sm">
+                      Login
+                    </button>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <div class= "container">
+      <p class="alert alert-success" role="alert"><%= get_flash(@conn, :success) %></p>
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 
