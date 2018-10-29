@@ -44,7 +44,8 @@ defmodule ExBlog.Mixfile do
       {:plug_cowboy, "~> 1.0"},
       {:guardian, "~> 1.1"},
       {:comeonin, "~> 4.1"},
-      {:bcrypt_elixir, "~> 1.1"}
+      {:bcrypt_elixir, "~> 1.1"},
+      {:distillery, "~> 1.5.5"}
     ]
   end
 
