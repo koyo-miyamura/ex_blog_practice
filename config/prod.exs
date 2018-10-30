@@ -77,7 +77,3 @@ config :ex_blog, ExBlog.Repo,
   database: "",
   ssl: true,
   pool_size: 1 # Free tier db only allows 2 connections. Rolling deploys need n+1 connections. Also, save one for psql, jobs, etc.
-
-config :ex_blog, ExBlog.Accounts.Guardian,
-  issuer: "ex_blog", # Name of your app/company/product
-  secret_key: "${EX_BLOG_GUARDIAN_KEY}"
