@@ -1,23 +1,72 @@
 defmodule ExBlogWeb.ArticleControllerTest do
   use ExBlogWeb.ConnCase
 
+  import ExBlog.Support.Utils
+
   alias ExBlog.Blog
+  alias ExBlog.Accounts
+  alias ExBlog.Accounts.User
+
+  @valid_user_attrs %{email: "some@example.com", name: "somename", password: "somepassword"}
 
   @create_attrs %{content: "some content", title: "some title"}
   @update_attrs %{content: "some updated content", title: "some updated title"}
   @invalid_attrs %{content: nil, title: nil}
 
-  def fixture(:article) do
-    {:ok, article} = Blog.create_article(@create_attrs)
+  def fixture(:user) do
+    {:ok, user} = Accounts.create_user(@valid_user_attrs)
+    user
+  end
+
+  def fixture(:article, %User{} = user) do
+    {:ok, article} = Blog.create_article(user, @create_attrs)
     article
   end
 
-  describe "index" do
-    test "lists all articles", %{conn: conn} do
+  describe "need login" do
+    setup [:create_article]
+
+    test "index", %{conn: conn} do
       conn = get conn, article_path(conn, :index)
-      assert html_response(conn, 200) =~ "Listing Articles"
+      assert response(conn, 401)
+    end
+    test "new", %{conn: conn} do
+      conn = get conn, article_path(conn, :new)
+      assert response(conn, 401)
+    end
+    test "create", %{conn: conn} do
+      conn = get conn, article_path(conn, :create)
+      assert response(conn, 401)
+    end
+    test "show", %{conn: conn, article: article} do
+      conn = get conn, article_path(conn, :show, article)
+      assert response(conn, 401)
+    end
+    test "edit", %{conn: conn, article: article} do
+      conn = get conn, article_path(conn, :edit, article)
+      assert response(conn, 401)
+    end
+    test "update", %{conn: conn, article: article} do
+      conn = get conn, article_path(conn, :update, article)
+      assert response(conn, 401)
+    end
+    test "delete", %{conn: conn, article: article} do
+      conn = get conn, article_path(conn, :delete, article)
+      assert response(conn, 401)
     end
   end
+
+  describe "index" do
+    setup [:create_user]
+
+    test "lists all articles", %{conn: conn, user: user} do
+      conn = login_user(conn, user)
+      conn = get conn, article_path(conn, :index)
+      assert response(conn, 200)
+    end
+  end
+
+## 以下まだ書いていないのでデフォルトのまま
 
   describe "new article" do
     test "renders form", %{conn: conn} do
@@ -82,7 +131,14 @@ defmodule ExBlogWeb.ArticleControllerTest do
   end
 
   defp create_article(_) do
-    article = fixture(:article)
+    user = fixture(:user)
+    article = fixture(:article, user)
     {:ok, article: article}
   end
+
+  defp create_user(_) do
+    user = fixture(:user)
+    {:ok, user: user}
+  end
+
 end
